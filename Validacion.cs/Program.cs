@@ -12,9 +12,8 @@ namespace MesaDePartes
         public static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-            Console.OutputEncoding = Encoding.UTF8;
+
             if (args.Length > 0 && args[0] == "--pruebas")
-                if (args.Length > 0 && args[0] == "--pruebas")
             {
                 Pruebas.Ejecutar();
                 return;
@@ -22,8 +21,6 @@ namespace MesaDePartes
 
             int cargados, omitidas;
             Persistencia.Cargar(out cargados, out omitidas);
-            Console.WriteLine("Expedientes cargados desde archivo: " + cargados
-                              + (omitidas > 0 ? " (líneas ignoradas: " + omitidas + ")" : ""));
 
             try
             {
