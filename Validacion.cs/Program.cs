@@ -2,30 +2,24 @@
 
 namespace MesaDePartes
 {
+    // CLASE PROGRAM
+    // Es el programa principal: muestra el menú y coordina a las demás clases.
+    // Las funciones tienen los mismos nombres que en el PSeInt.
     public static class Program
     {
         public static void Main(string[] args)
         {
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.OutputEncoding = System.Text.Encoding.UTF8; // solo para que se vean las tildes
 
-            int cantidad, op;
-            string[] codigo = new string[1001];
-            string[] nombres = new string[1001];
-            string[] dni = new string[1001];
-            string[] direccion = new string[1001];
-            string[] departamento = new string[1001];
-            string[] provincia = new string[1001];
-            string[] distrito = new string[1001];
-            string[] urbanizacion = new string[1001];
-            string[] correo = new string[1001];
-            string[] telefono = new string[1001];
-            string[] informacion = new string[1001];
-            string[] dependencia = new string[1001];
-            string[] formaEntrega = new string[1001];
-            string[] fechaHora = new string[1001];
-            string[] estado = new string[1001];
+            Persistencia.CargarExpedientes(); // lee expedientes.txt (si existe)
+            ControlarMenu();
+        }
 
-            cantidad = 0;
+        // Repite el menú hasta que el usuario elige "Salir" (PSeInt: Repetir ... Hasta Que op=5)
+        static void ControlarMenu()
+        {
+            int op;
+
             do
             {
                 Console.WriteLine("");
@@ -33,31 +27,57 @@ namespace MesaDePartes
                 Console.WriteLine("1. Presentar una solicitud");
                 Console.WriteLine("2. Consultar mi expediente por código");
                 Console.WriteLine("3. Ver todos mis expedientes por DNI");
-                Console.WriteLine("4. Salir");
+                Console.WriteLine("4. Listar expedientes ordenados por apellidos y nombres");
+                Console.WriteLine("5. Salir");
                 Console.WriteLine("Seleccione una opción:");
-                if (!int.TryParse(Console.ReadLine(), out op)) op = 0;
+                // Si escriben letras en vez de un número, op queda en 0 y cae en "Opción no válida"
+                if (!int.TryParse(Console.ReadLine(), out op))
+                {
+                    op = 0;
+                }
                 switch (op)
                 {
                     case 1:
-                        RegistrarSolicitud(codigo, nombres, dni, direccion, departamento, provincia, distrito, urbanizacion, correo, telefono, informacion, dependencia, formaEntrega, fechaHora, estado, ref cantidad);
+                        RegistrarSolicitud();
                         break;
                     case 2:
-                        ConsultarExpediente(codigo, nombres, dni, direccion, departamento, provincia, distrito, urbanizacion, correo, telefono, informacion, dependencia, formaEntrega, fechaHora, estado, cantidad);
+                        ConsultarExpediente();
                         break;
                     case 3:
-                        VerExpedientesPorDni(codigo, nombres, dni, direccion, departamento, provincia, distrito, urbanizacion, correo, telefono, informacion, dependencia, formaEntrega, fechaHora, estado, cantidad);
+                        VerExpedientesPorDni();
                         break;
                     case 4:
+                        ListarOrdenados();
+                        break;
+                    case 5:
                         Console.WriteLine("Gracias por utilizar la Mesa de Partes Digital.");
                         break;
                     default:
-                        Console.WriteLine("Opción no válida. Seleccione del 1 al 4.");
+                        Console.WriteLine("Opción no válida. Seleccione del 1 al 5.");
                         break;
                 }
-            } while (op != 4);
+            } while (op != 5);
         }
 
-        static void RegistrarSolicitud(string[] codigo, string[] nombres, string[] dni, string[] direccion, string[] departamento, string[] provincia, string[] distrito, string[] urbanizacion, string[] correo, string[] telefono, string[] informacion, string[] dependencia, string[] formaEntrega, string[] fechaHora, string[] estado, ref int cantidad)
+        // Pide el texto repetidamente hasta que no esté vacío. Devuelve el texto escrito.
+        static string LeerTextoNoVacio(string mensaje)
+        {
+            string valor;
+
+            do
+            {
+                Console.WriteLine(mensaje);
+                valor = Console.ReadLine();
+                if (valor.Length == 0)
+                {
+                    Console.WriteLine("Este dato no puede quedar vacío.");
+                }
+            } while (valor.Length <= 0);
+            return valor;
+        }
+
+        // Pide los datos, los valida, los guarda en los arreglos paralelos y en el archivo.
+        static void RegistrarSolicitud()
         {
             string nuevoCodigo, nuevoNombre, nuevoDni, nuevaDireccion;
             string nuevoDepartamento, nuevaProvincia, nuevoDistrito, nuevaUrbanizacion;
@@ -67,17 +87,18 @@ namespace MesaDePartes
             int fechaNumero, horaNumero, anioActual, opEntrega;
             bool valido;
 
-            if (cantidad >= 1000)
+            if (Expedientes.cantidad >= Expedientes.MAXIMO)
             {
-                Console.WriteLine("No se pueden registrar más expedientes en esta ejecución.");
+                Console.WriteLine("No se pueden registrar más expedientes.");
             }
             else
             {
+                // Fecha y hora como números (PSeInt: FechaActual() y HoraActual())
                 DateTime ahora = DateTime.Now;
                 fechaNumero = ahora.Year * 10000 + ahora.Month * 100 + ahora.Day;
                 horaNumero = ahora.Hour * 10000 + ahora.Minute * 100 + ahora.Second;
                 anioActual = fechaNumero / 10000;
-                nuevoCodigo = GenerarCodigo(codigo, cantidad, anioActual);
+                nuevoCodigo = Expedientes.GenerarCodigo(anioActual);
                 Console.WriteLine("");
                 Console.WriteLine("Número de registro: " + nuevoCodigo);
                 Console.WriteLine("");
@@ -91,7 +112,7 @@ namespace MesaDePartes
                 {
                     Console.WriteLine("Documento de identidad (8 dígitos):");
                     nuevoDni = Console.ReadLine();
-                    valido = EsDigitosExactos(nuevoDni, 8);
+                    valido = Validaciones.EsDigitosExactos(nuevoDni, 8);
                     if (!valido)
                     {
                         Console.WriteLine("El DNI debe tener exactamente 8 dígitos.");
@@ -106,7 +127,7 @@ namespace MesaDePartes
                 {
                     Console.WriteLine("Correo electrónico:");
                     nuevoCorreo = Console.ReadLine();
-                    valido = CorreoValido(nuevoCorreo);
+                    valido = Validaciones.CorreoValido(nuevoCorreo);
                     if (!valido)
                     {
                         Console.WriteLine("El correo debe contener arroba y punto.");
@@ -116,7 +137,7 @@ namespace MesaDePartes
                 {
                     Console.WriteLine("Teléfono (9 dígitos):");
                     nuevoTelefono = Console.ReadLine();
-                    valido = EsDigitosExactos(nuevoTelefono, 9);
+                    valido = Validaciones.EsDigitosExactos(nuevoTelefono, 9);
                     if (!valido)
                     {
                         Console.WriteLine("El teléfono debe tener exactamente 9 dígitos.");
@@ -166,67 +187,43 @@ namespace MesaDePartes
                         nuevaFormaEntrega = "Otro: " + otraForma;
                         break;
                 }
-                nuevaFechaHora = FormatearFechaHora(fechaNumero, horaNumero);
-                cantidad = cantidad + 1;
-                codigo[cantidad] = nuevoCodigo;
-                nombres[cantidad] = nuevoNombre;
-                dni[cantidad] = nuevoDni;
-                direccion[cantidad] = nuevaDireccion;
-                departamento[cantidad] = nuevoDepartamento;
-                provincia[cantidad] = nuevaProvincia;
-                distrito[cantidad] = nuevoDistrito;
-                urbanizacion[cantidad] = nuevaUrbanizacion;
-                correo[cantidad] = nuevoCorreo;
-                telefono[cantidad] = nuevoTelefono;
-                informacion[cantidad] = nuevaInformacion;
-                dependencia[cantidad] = nuevaDependencia;
-                formaEntrega[cantidad] = nuevaFormaEntrega;
-                fechaHora[cantidad] = nuevaFechaHora;
-                estado[cantidad] = "Pendiente";
+                nuevaFechaHora = Expedientes.FormatearFechaHora(fechaNumero, horaNumero);
+
+                // Guardar en los arreglos paralelos: todos en la misma posición "cantidad"
+                Expedientes.cantidad = Expedientes.cantidad + 1;
+                Expedientes.codigo[Expedientes.cantidad] = nuevoCodigo;
+                Expedientes.nombres[Expedientes.cantidad] = nuevoNombre;
+                Expedientes.dni[Expedientes.cantidad] = nuevoDni;
+                Expedientes.direccion[Expedientes.cantidad] = nuevaDireccion;
+                Expedientes.departamento[Expedientes.cantidad] = nuevoDepartamento;
+                Expedientes.provincia[Expedientes.cantidad] = nuevaProvincia;
+                Expedientes.distrito[Expedientes.cantidad] = nuevoDistrito;
+                Expedientes.urbanizacion[Expedientes.cantidad] = nuevaUrbanizacion;
+                Expedientes.correo[Expedientes.cantidad] = nuevoCorreo;
+                Expedientes.telefono[Expedientes.cantidad] = nuevoTelefono;
+                Expedientes.informacion[Expedientes.cantidad] = nuevaInformacion;
+                Expedientes.dependencia[Expedientes.cantidad] = nuevaDependencia;
+                Expedientes.formaEntrega[Expedientes.cantidad] = nuevaFormaEntrega;
+                Expedientes.fechaHora[Expedientes.cantidad] = nuevaFechaHora;
+                Expedientes.estado[Expedientes.cantidad] = "Pendiente";
+
+                // Guardar en el archivo para no perder el trámite al cerrar el programa
+                Persistencia.GuardarExpedientes();
+
                 Console.WriteLine("");
                 Console.WriteLine("===== CARGO DE RECEPCIÓN =====");
-                Console.WriteLine("Número de registro: " + codigo[cantidad]);
-                Console.WriteLine("Fecha y hora: " + fechaHora[cantidad]);
-                Console.WriteLine("Solicitante: " + nombres[cantidad]);
-                Console.WriteLine("DNI: " + dni[cantidad]);
-                Console.WriteLine("Información solicitada: " + informacion[cantidad]);
-                Console.WriteLine("Estado: " + estado[cantidad]);
-                Console.WriteLine("Se enviaría una confirmación a " + correo[cantidad] + ".");
+                Console.WriteLine("Número de registro: " + Expedientes.codigo[Expedientes.cantidad]);
+                Console.WriteLine("Fecha y hora: " + Expedientes.fechaHora[Expedientes.cantidad]);
+                Console.WriteLine("Solicitante: " + Expedientes.nombres[Expedientes.cantidad]);
+                Console.WriteLine("DNI: " + Expedientes.dni[Expedientes.cantidad]);
+                Console.WriteLine("Información solicitada: " + Expedientes.informacion[Expedientes.cantidad]);
+                Console.WriteLine("Estado: " + Expedientes.estado[Expedientes.cantidad]);
+                Console.WriteLine("Se enviaría una confirmación a " + Expedientes.correo[Expedientes.cantidad] + ".");
             }
         }
 
-        static string GenerarCodigo(string[] codigo, int cantidad, int anioActual)
-        {
-            int correlativo, anioAnterior;
-            string anioTexto, correlativoTexto, codigoNuevo;
-
-            if (cantidad == 0)
-            {
-                correlativo = 1;
-            }
-            else
-            {
-                anioAnterior = Convert.ToInt32(codigo[cantidad].Substring(4, 4));
-                if (anioAnterior == anioActual)
-                {
-                    correlativo = Convert.ToInt32(codigo[cantidad].Substring(9, 5)) + 1;
-                }
-                else
-                {
-                    correlativo = 1;
-                }
-            }
-            anioTexto = anioActual.ToString();
-            correlativoTexto = correlativo.ToString();
-            while (correlativoTexto.Length < 5)
-            {
-                correlativoTexto = "0" + correlativoTexto;
-            }
-            codigoNuevo = "EXP-" + anioTexto + "-" + correlativoTexto;
-            return codigoNuevo;
-        }
-
-        static void ConsultarExpediente(string[] codigo, string[] nombres, string[] dni, string[] direccion, string[] departamento, string[] provincia, string[] distrito, string[] urbanizacion, string[] correo, string[] telefono, string[] informacion, string[] dependencia, string[] formaEntrega, string[] fechaHora, string[] estado, int cantidad)
+        // Pide un código válido, lo busca con búsqueda binaria y muestra el expediente.
+        static void ConsultarExpediente()
         {
             string codigoBuscado;
             int posicion;
@@ -236,53 +233,26 @@ namespace MesaDePartes
             {
                 Console.WriteLine("Ingrese el código (EXP-AAAA-NNNNN):");
                 codigoBuscado = Console.ReadLine();
-                valido = CodigoValido(codigoBuscado);
+                valido = Validaciones.CodigoValido(codigoBuscado);
                 if (!valido)
                 {
                     Console.WriteLine("Formato incorrecto. Ejemplo: EXP-2026-00001.");
                 }
             } while (!valido);
-            posicion = BusquedaBinaria(codigo, cantidad, codigoBuscado);
+            posicion = Busqueda.BusquedaBinaria(codigoBuscado);
             if (posicion == 0)
             {
                 Console.WriteLine("Expediente no encontrado.");
             }
             else
             {
-                MostrarExpediente(codigo, nombres, dni, direccion, departamento, provincia, distrito, urbanizacion, correo, telefono, informacion, dependencia, formaEntrega, fechaHora, estado, posicion);
+                Expedientes.MostrarExpediente(posicion);
             }
         }
 
-        static int BusquedaBinaria(string[] codigo, int cantidad, string codigoBuscado)
-        {
-            int izquierda, derecha, medio, posicion;
-
-            izquierda = 1;
-            derecha = cantidad;
-            posicion = 0;
-            while (izquierda <= derecha && posicion == 0)
-            {
-                medio = (izquierda + derecha) / 2;
-                if (codigo[medio] == codigoBuscado)
-                {
-                    posicion = medio;
-                }
-                else
-                {
-                    if (string.CompareOrdinal(codigo[medio], codigoBuscado) < 0)
-                    {
-                        izquierda = medio + 1;
-                    }
-                    else
-                    {
-                        derecha = medio - 1;
-                    }
-                }
-            }
-            return posicion;
-        }
-
-        static void VerExpedientesPorDni(string[] codigo, string[] nombres, string[] dni, string[] direccion, string[] departamento, string[] provincia, string[] distrito, string[] urbanizacion, string[] correo, string[] telefono, string[] informacion, string[] dependencia, string[] formaEntrega, string[] fechaHora, string[] estado, int cantidad)
+        // Búsqueda lineal: recorre todos los expedientes y muestra los que tienen ese DNI.
+        // Un mismo DNI puede tener varios expedientes.
+        static void VerExpedientesPorDni()
         {
             string dniBuscado;
             int i, encontrados;
@@ -292,21 +262,21 @@ namespace MesaDePartes
             {
                 Console.WriteLine("Ingrese su DNI (8 dígitos):");
                 dniBuscado = Console.ReadLine();
-                valido = EsDigitosExactos(dniBuscado, 8);
+                valido = Validaciones.EsDigitosExactos(dniBuscado, 8);
                 if (!valido)
                 {
                     Console.WriteLine("El DNI debe tener exactamente 8 dígitos.");
                 }
             } while (!valido);
             encontrados = 0;
-            for (i = 1; i <= cantidad; i++)
+            for (i = 1; i <= Expedientes.cantidad; i++)
             {
-                if (dni[i] == dniBuscado)
+                if (Expedientes.dni[i] == dniBuscado)
                 {
                     encontrados = encontrados + 1;
                     Console.WriteLine("");
                     Console.WriteLine("Expediente " + encontrados);
-                    MostrarExpediente(codigo, nombres, dni, direccion, departamento, provincia, distrito, urbanizacion, correo, telefono, informacion, dependencia, formaEntrega, fechaHora, estado, i);
+                    Expedientes.MostrarExpediente(i);
                 }
             }
             if (encontrados == 0)
@@ -315,138 +285,27 @@ namespace MesaDePartes
             }
         }
 
-        static void MostrarExpediente(string[] codigo, string[] nombres, string[] dni, string[] direccion, string[] departamento, string[] provincia, string[] distrito, string[] urbanizacion, string[] correo, string[] telefono, string[] informacion, string[] dependencia, string[] formaEntrega, string[] fechaHora, string[] estado, int posicion)
+        // Ordena con el método de la burbuja y muestra la lista por apellidos y nombres.
+        static void ListarOrdenados()
         {
-            Console.WriteLine("Código: " + codigo[posicion]);
-            Console.WriteLine("Apellidos y nombres: " + nombres[posicion]);
-            Console.WriteLine("DNI: " + dni[posicion]);
-            Console.WriteLine("Dirección: " + direccion[posicion]);
-            Console.WriteLine("Departamento: " + departamento[posicion]);
-            Console.WriteLine("Provincia: " + provincia[posicion]);
-            Console.WriteLine("Distrito: " + distrito[posicion]);
-            Console.WriteLine("Urbanización: " + urbanizacion[posicion]);
-            Console.WriteLine("Correo: " + correo[posicion]);
-            Console.WriteLine("Teléfono: " + telefono[posicion]);
-            Console.WriteLine("Información solicitada: " + informacion[posicion]);
-            Console.WriteLine("Dependencia: " + dependencia[posicion]);
-            Console.WriteLine("Forma de entrega: " + formaEntrega[posicion]);
-            Console.WriteLine("Fecha y hora: " + fechaHora[posicion]);
-            Console.WriteLine("Estado: " + estado[posicion]);
-        }
-
-        static bool EsDigitosExactos(string texto, int largoEsperado)
-        {
+            int[] orden = new int[Expedientes.MAXIMO + 1];
             int i;
-            char caracter;
-            bool resultado;
 
-            if (texto.Length == largoEsperado)
+            if (Expedientes.cantidad == 0)
             {
-                resultado = true;
-                for (i = 1; i <= largoEsperado; i++)
-                {
-                    caracter = texto[i - 1];
-                    if (caracter < '0' || caracter > '9')
-                    {
-                        resultado = false;
-                    }
-                }
+                Console.WriteLine("No hay expedientes registrados.");
             }
             else
             {
-                resultado = false;
-            }
-            return resultado;
-        }
-
-        static bool CorreoValido(string texto)
-        {
-            int i;
-            char caracter;
-            bool tieneArroba, tienePunto;
-
-            tieneArroba = false;
-            tienePunto = false;
-            for (i = 1; i <= texto.Length; i++)
-            {
-                caracter = texto[i - 1];
-                if (caracter == '@')
+                Ordenamiento.OrdenarPorNombres(orden);
+                Console.WriteLine("");
+                Console.WriteLine("EXPEDIENTES ORDENADOS POR APELLIDOS Y NOMBRES");
+                for (i = 1; i <= Expedientes.cantidad; i++)
                 {
-                    tieneArroba = true;
-                }
-                if (caracter == '.')
-                {
-                    tienePunto = true;
+                    Console.WriteLine(Expedientes.nombres[orden[i]] + " | " + Expedientes.codigo[orden[i]]
+                        + " | " + Expedientes.fechaHora[orden[i]] + " | " + Expedientes.estado[orden[i]]);
                 }
             }
-            return tieneArroba && tienePunto;
-        }
-
-        static bool CodigoValido(string texto)
-        {
-            int i;
-            char caracter;
-            bool resultado;
-
-            resultado = false;
-            if (texto.Length == 14)
-            {
-                if (texto.Substring(0, 3) == "EXP" && texto[3] == '-' && texto[8] == '-')
-                {
-                    resultado = true;
-                    for (i = 5; i <= 8; i++)
-                    {
-                        caracter = texto[i - 1];
-                        if (caracter < '0' || caracter > '9')
-                        {
-                            resultado = false;
-                        }
-                    }
-                    for (i = 10; i <= 14; i++)
-                    {
-                        caracter = texto[i - 1];
-                        if (caracter < '0' || caracter > '9')
-                        {
-                            resultado = false;
-                        }
-                    }
-                }
-            }
-            return resultado;
-        }
-
-        static string LeerTextoNoVacio(string mensaje)
-        {
-            string valor;
-
-            do
-            {
-                Console.WriteLine(mensaje);
-                valor = Console.ReadLine();
-                if (valor.Length == 0)
-                {
-                    Console.WriteLine("Este dato no puede quedar vacío.");
-                }
-            } while (valor.Length <= 0);
-            return valor;
-        }
-
-        static string FormatearFechaHora(int fechaNumero, int horaNumero)
-        {
-            string fechaTexto, horaTexto, resultado;
-
-            fechaTexto = fechaNumero.ToString();
-            horaTexto = horaNumero.ToString();
-            while (fechaTexto.Length < 8)
-            {
-                fechaTexto = "0" + fechaTexto;
-            }
-            while (horaTexto.Length < 6)
-            {
-                horaTexto = "0" + horaTexto;
-            }
-            resultado = fechaTexto.Substring(0, 4) + "-" + fechaTexto.Substring(4, 2) + "-" + fechaTexto.Substring(6, 2) + " " + horaTexto.Substring(0, 2) + ":" + horaTexto.Substring(2, 2);
-            return resultado;
         }
     }
 }
