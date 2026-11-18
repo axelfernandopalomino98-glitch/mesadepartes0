@@ -130,7 +130,14 @@ namespace MesaDePartes
                     valido = Validaciones.CorreoValido(nuevoCorreo);
                     if (!valido)
                     {
-                        Console.WriteLine("El correo debe contener arroba y punto.");
+                        if (Validaciones.ContarArrobas(nuevoCorreo) > 1)
+                        {
+                            Console.WriteLine("El correo no puede tener mas de un arroba.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("El correo debe tener un nombre antes del arroba y un punto despues.");
+                        }
                     }
                 } while (!valido);
                 do

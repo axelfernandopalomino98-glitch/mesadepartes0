@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Messaging;
 
 namespace MesaDePartes
 {
@@ -33,27 +34,49 @@ namespace MesaDePartes
             return resultado;
         }
 
-        // Verdadero si el correo tiene al menos una arroba y al menos un punto.
+        // Verdadero si el correo tiene un nombre, exactamente un arroba y al menos un punto despues de ella.
         public static bool CorreoValido(string texto)
         {
-            bool tieneArroba, tienePunto;
+            int cantidadArrobas;
+            bool tienePunto;
+            int posicion;
 
-            tieneArroba = false;
+            cantidadArrobas = 0;
             tienePunto = false;
+            posicion = 0;
             foreach (char caracter in texto)
             {
                 if (caracter == '@')
                 {
-                    tieneArroba = true;
+                    cantidadArrobas++;
+                    if (posicion == 0)
+                    {
+                        return false; 
+                    }
                 }
-                if (caracter == '.')
+                if (caracter == '.' && cantidadArrobas == 1)
                 {
                     tienePunto = true;
                 }
+                posicion++;
             }
-            return tieneArroba && tienePunto;
+            return cantidadArrobas == 1 && tienePunto;
         }
+        // Devuelve cuantas arrobas tiene el texto.
+        public static int ContarArrobas(string texto)
+        {
+            int cantidad;
 
+            cantidad = 0;
+            foreach (char caracter in texto)
+            {
+                if (caracter == '@')
+                {
+                    cantidad++;
+                }
+            }
+            return cantidad;
+        }
         // Verdadero si el texto tiene el formato EXP-AAAA-NNNNN (14 caracteres).
         // Substring(4, 4) toma el año y Substring(9, 5) toma el número.
         public static bool CodigoValido(string texto)
