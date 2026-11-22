@@ -23,19 +23,31 @@ namespace MesaDePartes
             do
             {
                 Console.WriteLine("");
+
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 Console.WriteLine("MESA DE PARTES DIGITAL - MUNICIPALIDAD DE COMAS");
+
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("1. Presentar una solicitud");
                 Console.WriteLine("2. Consultar mi expediente por código");
                 Console.WriteLine("3. Ver todos mis expedientes por DNI");
                 Console.WriteLine("4. Listar expedientes ordenados por apellidos y nombres");
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("5. Salir");
+
+                Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Seleccione una opción:");
+                Console.ResetColor();
+                Console.ForegroundColor = ConsoleColor.White;
                 // Si escriben letras en vez de un número, op queda en 0 y cae en "Opción no válida"
                 if (!int.TryParse(Console.ReadLine(), out op))
                 {
                     op = 0;
                 }
                 switch (op)
+
                 {
                     case 1:
                         RegistrarSolicitud();
@@ -75,6 +87,37 @@ namespace MesaDePartes
             } while (valor.Length <= 0);
             return valor;
         }
+        // Muestra las 5 dependendencias mas usadas en un mini menu y obliga a elegiruna.
+        // Las dependencias estan en un arreglo, la opcion elegida menos 1es su posicion en el arreglo.
+        static string LeerDependencia()
+        {
+            string[] dependencias = {
+                "Oficina de Atencion al Ciudadano, Tramites Documentario y Archivo",
+                "Gerencia de Administracion Tributaria",
+                "Gererncia de Gestion Territorial y Desarrollo Economico",
+                "Subgerencia de Obras Privadas y Catastro",
+                "Subgerencia de gestion del Riesgo de Desastres"
+            };
+            int i, opcion;
+            for (i = 0; i < dependencias.Length; i++)
+            {
+                Console.WriteLine((i + 1) + ". " + dependencias[i]);
+            }
+            do
+            {
+                Console.WriteLine("Seleccione una opcioon del 1 al 5:");
+                if (!int.TryParse(Console.ReadLine(), out opcion))
+                {
+                    opcion = 0;
+                }
+                if (opcion < 1 || opcion > 5)
+                {
+                    Console.WriteLine("Opcion no valida.");
+                }
+
+            } while (opcion < 1 || opcion > 5);
+            return dependencias[opcion - 1];
+        }
 
         // Pide los datos, los valida, los guarda en los arreglos paralelos y en el archivo.
         static void RegistrarSolicitud()
@@ -112,10 +155,10 @@ namespace MesaDePartes
                 {
                     Console.WriteLine("Documento de identidad (8 dígitos):");
                     nuevoDni = Console.ReadLine();
-                    valido = Validaciones.EsDigitosExactos(nuevoDni, 8);
+                    valido = Validaciones.DniValido(nuevoDni);
                     if (!valido)
                     {
-                        Console.WriteLine("El DNI debe tener exactamente 8 dígitos.");
+                        Console.WriteLine("El DNI debe tener exactamente 8 dígitos y no puede ser 00000000.");
                     }
                 } while (!valido);
                 nuevaDireccion = LeerTextoNoVacio("Av./Calle/Jr./Psj.: ");
@@ -144,10 +187,10 @@ namespace MesaDePartes
                 {
                     Console.WriteLine("Teléfono (9 dígitos):");
                     nuevoTelefono = Console.ReadLine();
-                    valido = Validaciones.EsDigitosExactos(nuevoTelefono, 9);
+                    valido = Validaciones.TelefonoValido(nuevoTelefono);
                     if (!valido)
                     {
-                        Console.WriteLine("El teléfono debe tener exactamente 9 dígitos.");
+                        Console.WriteLine("El teléfono debe tener exactamente 9 dígitos y debe de empezar con 9.");
                     }
                 } while (!valido);
                 Console.WriteLine("");
@@ -156,8 +199,8 @@ namespace MesaDePartes
                 nuevaInformacion = LeerTextoNoVacio("Información solicitada: ");
                 Console.WriteLine("");
                 Console.WriteLine("IV. Dependencia de la cual se requiere la información");
-                Console.WriteLine("Escribe el nombre del área municipal que posee o administra el documento que solicitas.");
-                nuevaDependencia = LeerTextoNoVacio("Dependencia: ");
+                Console.WriteLine("Selecciona el area municipal que posee o administra el documento que solicitas.");
+                nuevaDependencia = LeerDependencia();
                 Console.WriteLine("");
                 Console.WriteLine("V. Forma de entrega de la información");
                 Console.WriteLine("1. Copia simple (reproducción física del documento)");

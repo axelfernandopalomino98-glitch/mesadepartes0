@@ -33,6 +33,31 @@ namespace MesaDePartes
             }
             return resultado;
         }
+        // Verdadero si el DNI tiene exactamente 8 digitos y no es 00000000
+        public static bool DniValido(string texto)
+        {
+            bool resultado;
+            resultado = EsDigitosExactos(texto, 8);
+            if (texto == "00000000")
+            {
+                resultado = false;
+            }
+            return resultado;
+        }
+
+        // Verdadero si el telefono tiene exactamente 9 digitos y empieza con 9.
+        // Texto[0] es el primer caracter. Solo se revisa si ya tiene 9 digitos, asi nunca esta vacio.
+
+        public static bool TelefonoValido(string texto)
+        {
+            bool resultado;
+            resultado = EsDigitosExactos(texto, 9);
+            if (resultado && texto[0] != '9')
+            {
+                resultado = false;
+            }
+            return resultado;
+        }
 
         // Verdadero si el correo tiene un nombre, exactamente un arroba y al menos un punto despues de ella.
         public static bool CorreoValido(string texto)
