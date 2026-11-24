@@ -148,7 +148,6 @@ namespace MesaDePartes
 
                 nuevaDireccion = LeerTextoNoVacio("Av./Calle/Jr./Psj.: ");
                 nuevoDepartamento = LeerTextoNoVacio("Departamento: ");
-                nuevoDepartamento = LeerTextoNoVacio("Departamento: ");
                 nuevaProvincia = LeerTextoNoVacio("Provincia: ");
                 nuevoDistrito = LeerTextoNoVacio("Distrito: ");
                 nuevaUrbanizacion = LeerTextoNoVacio("Urbanización: ");
