@@ -89,21 +89,21 @@ namespace MesaDePartes
         // FUNCIÓN SIN RETORNO (void). Muestra en pantalla el expediente de la posición indicada.
         public static void MostrarExpediente(int posicion)
         {
-            Console.WriteLine("Código: " + codigo[posicion]);
-            Console.WriteLine("Apellidos y nombres: " + nombres[posicion]);
-            Console.WriteLine("DNI: " + dni[posicion]);
-            Console.WriteLine("Dirección: " + direccion[posicion]);
-            Console.WriteLine("Departamento: " + departamento[posicion]);
-            Console.WriteLine("Provincia: " + provincia[posicion]);
-            Console.WriteLine("Distrito: " + distrito[posicion]);
-            Console.WriteLine("Urbanización: " + urbanizacion[posicion]);
-            Console.WriteLine("Correo: " + correo[posicion]);
-            Console.WriteLine("Teléfono: " + telefono[posicion]);
-            Console.WriteLine("Información solicitada: " + informacion[posicion]);
-            Console.WriteLine("Dependencia: " + dependencia[posicion]);
-            Console.WriteLine("Forma de entrega: " + formaEntrega[posicion]);
-            Console.WriteLine("Fecha y hora: " + fechaHora[posicion]);
-            Console.WriteLine("Estado: " + estado[posicion]);
+            Colores.Texto("Código: " + codigo[posicion]);
+            Colores.Texto("Apellidos y nombres: " + nombres[posicion]);
+            Colores.Texto("DNI: " + dni[posicion]);
+            Colores.Texto("Dirección: " + direccion[posicion]);
+            Colores.Texto("Departamento: " + departamento[posicion]);
+            Colores.Texto("Provincia: " + provincia[posicion]);
+            Colores.Texto("Distrito: " + distrito[posicion]);
+            Colores.Texto("Urbanización: " + urbanizacion[posicion]);
+            Colores.Texto("Correo: " + correo[posicion]);
+            Colores.Texto("Teléfono: " + telefono[posicion]);
+            Colores.Texto("Información solicitada: " + informacion[posicion]);
+            Colores.Texto("Dependencia: " + dependencia[posicion]);
+            Colores.Texto("Forma de entrega: " + formaEntrega[posicion]);
+            Colores.Texto("Fecha y hora: " + fechaHora[posicion]);
+            Colores.Texto("Estado: " + estado[posicion]);
         }
     }
 }

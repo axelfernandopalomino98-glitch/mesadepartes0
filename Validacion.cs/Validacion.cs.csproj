@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Busqueda.cs" />
+    <Compile Include="Colores.cs" />
     <Compile Include="Expedientes.cs" />
     <Compile Include="Ordenamiento.cs" />
     <Compile Include="Persistencia.cs" />

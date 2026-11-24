@@ -23,31 +23,19 @@ namespace MesaDePartes
             do
             {
                 Console.WriteLine("");
-
-                Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("MESA DE PARTES DIGITAL - MUNICIPALIDAD DE COMAS");
-
-                Console.ResetColor();
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("1. Presentar una solicitud");
-                Console.WriteLine("2. Consultar mi expediente por código");
-                Console.WriteLine("3. Ver todos mis expedientes por DNI");
-                Console.WriteLine("4. Listar expedientes ordenados por apellidos y nombres");
-
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("5. Salir");
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Seleccione una opción:");
-                Console.ResetColor();
-                Console.ForegroundColor = ConsoleColor.White;
+                Colores.Titulo("MESA DE PARTES DIGITAL - MUNICIPALIDAD DE COMAS");
+                Colores.Texto("1. Presentar una solicitud");
+                Colores.Texto("2. Consultar mi expediente por código");
+                Colores.Texto("3. Ver todos mis expedientes por DNI");
+                Colores.Texto("4. Listar expedientes ordenados por apellidos y nombres");
+                Colores.Texto("5. Salir");
+                Colores.Texto("Seleccione una opción:");
                 // Si escriben letras en vez de un número, op queda en 0 y cae en "Opción no válida"
                 if (!int.TryParse(Console.ReadLine(), out op))
                 {
                     op = 0;
                 }
                 switch (op)
-
                 {
                     case 1:
                         RegistrarSolicitud();
@@ -62,10 +50,10 @@ namespace MesaDePartes
                         ListarOrdenados();
                         break;
                     case 5:
-                        Console.WriteLine("Gracias por utilizar la Mesa de Partes Digital.");
+                        Colores.Exito("Gracias por utilizar la Mesa de Partes Digital.");
                         break;
                     default:
-                        Console.WriteLine("Opción no válida. Seleccione del 1 al 5.");
+                        Colores.Error("Opción no válida. Seleccione del 1 al 5.");
                         break;
                 }
             } while (op != 5);
@@ -78,43 +66,44 @@ namespace MesaDePartes
 
             do
             {
-                Console.WriteLine(mensaje);
+                Colores.Texto(mensaje);
                 valor = Console.ReadLine();
                 if (valor.Length == 0)
                 {
-                    Console.WriteLine("Este dato no puede quedar vacío.");
+                    Colores.Error("Este dato no puede quedar vacío.");
                 }
             } while (valor.Length <= 0);
             return valor;
         }
-        // Muestra las 5 dependendencias mas usadas en un mini menu y obliga a elegiruna.
-        // Las dependencias estan en un arreglo, la opcion elegida menos 1es su posicion en el arreglo.
+
+        // Muestra las 5 dependencias en un mini menú y obliga a elegir una (no se escribe nada).
+        // Las dependencias están en un ARREGLO; la opción elegida menos 1 es su posición en el arreglo.
         static string LeerDependencia()
         {
             string[] dependencias = {
-                "Oficina de Atencion al Ciudadano, Tramites Documentario y Archivo",
-                "Gerencia de Administracion Tributaria",
-                "Gererncia de Gestion Territorial y Desarrollo Economico",
+                "Oficina de Atención al Ciudadano, Trámite Documentario y Archivo",
+                "Gerencia de Administración Tributaria",
+                "Gerencia de Gestión Territorial y Desarrollo Económico",
                 "Subgerencia de Obras Privadas y Catastro",
-                "Subgerencia de gestion del Riesgo de Desastres"
+                "Subgerencia de Gestión del Riesgo de Desastres"
             };
             int i, opcion;
+
             for (i = 0; i < dependencias.Length; i++)
             {
-                Console.WriteLine((i + 1) + ". " + dependencias[i]);
+                Colores.Texto((i + 1) + ". " + dependencias[i]);
             }
             do
             {
-                Console.WriteLine("Seleccione una opcioon del 1 al 5:");
+                Colores.Texto("Seleccione una opción del 1 al 5:");
                 if (!int.TryParse(Console.ReadLine(), out opcion))
                 {
                     opcion = 0;
                 }
                 if (opcion < 1 || opcion > 5)
                 {
-                    Console.WriteLine("Opcion no valida.");
+                    Colores.Error("Opción no válida.");
                 }
-
             } while (opcion < 1 || opcion > 5);
             return dependencias[opcion - 1];
         }
@@ -132,7 +121,7 @@ namespace MesaDePartes
 
             if (Expedientes.cantidad >= Expedientes.MAXIMO)
             {
-                Console.WriteLine("No se pueden registrar más expedientes.");
+                Colores.Error("No se pueden registrar más expedientes.");
             }
             else
             {
@@ -143,22 +132,22 @@ namespace MesaDePartes
                 anioActual = fechaNumero / 10000;
                 nuevoCodigo = Expedientes.GenerarCodigo(anioActual);
                 Console.WriteLine("");
-                Console.WriteLine("Número de registro: " + nuevoCodigo);
+                Colores.Titulo("Número de registro: " + nuevoCodigo);
                 Console.WriteLine("");
-                Console.WriteLine("I. Funcionario responsable de entregar la información");
-                Console.WriteLine("Erika Julissa Otero Herrera");
+                Colores.Titulo("I. Funcionario responsable de entregar la información");
+                Colores.Texto("Erika Julissa Otero Herrera");
                 Console.WriteLine("");
-                Console.WriteLine("Coloca tu dirección real y tus datos correctos.");
-                Console.WriteLine("II. Datos del solicitante");
+                Colores.Advertencia("Coloca tu dirección real y tus datos correctos.");
+                Colores.Titulo("II. Datos del solicitante");
                 nuevoNombre = LeerTextoNoVacio("Apellidos y nombres: ");
                 do
                 {
-                    Console.WriteLine("Documento de identidad (8 dígitos):");
+                    Colores.Texto("Documento de identidad (8 dígitos):");
                     nuevoDni = Console.ReadLine();
                     valido = Validaciones.DniValido(nuevoDni);
                     if (!valido)
                     {
-                        Console.WriteLine("El DNI debe tener exactamente 8 dígitos y no puede ser 00000000.");
+                        Colores.Error("El DNI debe tener exactamente 8 dígitos y no puede ser 00000000.");
                     }
                 } while (!valido);
                 nuevaDireccion = LeerTextoNoVacio("Av./Calle/Jr./Psj.: ");
@@ -168,53 +157,46 @@ namespace MesaDePartes
                 nuevaUrbanizacion = LeerTextoNoVacio("Urbanización: ");
                 do
                 {
-                    Console.WriteLine("Correo electrónico:");
+                    Colores.Texto("Correo electrónico:");
                     nuevoCorreo = Console.ReadLine();
                     valido = Validaciones.CorreoValido(nuevoCorreo);
                     if (!valido)
                     {
-                        if (Validaciones.ContarArrobas(nuevoCorreo) > 1)
-                        {
-                            Console.WriteLine("El correo no puede tener mas de un arroba.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("El correo debe tener un nombre antes del arroba y un punto despues.");
-                        }
+                        Colores.Error("El correo debe contener arroba y punto.");
                     }
                 } while (!valido);
                 do
                 {
-                    Console.WriteLine("Teléfono (9 dígitos):");
+                    Colores.Texto("Teléfono (9 dígitos):");
                     nuevoTelefono = Console.ReadLine();
                     valido = Validaciones.TelefonoValido(nuevoTelefono);
                     if (!valido)
                     {
-                        Console.WriteLine("El teléfono debe tener exactamente 9 dígitos y debe de empezar con 9.");
+                        Colores.Error("El teléfono debe tener exactamente 9 dígitos y empezar con 9.");
                     }
                 } while (!valido);
                 Console.WriteLine("");
-                Console.WriteLine("III. Información solicitada");
-                Console.WriteLine("Aquí tienes que explicar claramente qué documento o información quieres obtener.");
+                Colores.Titulo("III. Información solicitada");
+                Colores.Texto("Aquí tienes que explicar claramente qué documento o información quieres obtener.");
                 nuevaInformacion = LeerTextoNoVacio("Información solicitada: ");
                 Console.WriteLine("");
-                Console.WriteLine("IV. Dependencia de la cual se requiere la información");
-                Console.WriteLine("Selecciona el area municipal que posee o administra el documento que solicitas.");
+                Colores.Titulo("IV. Dependencia de la cual se requiere la información");
+                Colores.Texto("Selecciona el área municipal que posee o administra el documento que solicitas.");
                 nuevaDependencia = LeerDependencia();
                 Console.WriteLine("");
-                Console.WriteLine("V. Forma de entrega de la información");
-                Console.WriteLine("1. Copia simple (reproducción física del documento)");
-                Console.WriteLine("2. Disquete (opción que aparece en el formulario impreso)");
-                Console.WriteLine("3. CD (si está disponible)");
-                Console.WriteLine("4. Correo electrónico");
-                Console.WriteLine("5. Otro");
+                Colores.Titulo("V. Forma de entrega de la información");
+                Colores.Texto("1. Copia simple (reproducción física del documento)");
+                Colores.Texto("2. Disquete (opción que aparece en el formulario impreso)");
+                Colores.Texto("3. CD (si está disponible)");
+                Colores.Texto("4. Correo electrónico");
+                Colores.Texto("5. Otro");
                 do
                 {
-                    Console.WriteLine("Seleccione una opción del 1 al 5:");
+                    Colores.Texto("Seleccione una opción del 1 al 5:");
                     entradaEntrega = Console.ReadLine();
                     if (entradaEntrega != "1" && entradaEntrega != "2" && entradaEntrega != "3" && entradaEntrega != "4" && entradaEntrega != "5")
                     {
-                        Console.WriteLine("Opción no válida.");
+                        Colores.Error("Opción no válida.");
                     }
                 } while (!(entradaEntrega == "1" || entradaEntrega == "2" || entradaEntrega == "3" || entradaEntrega == "4" || entradaEntrega == "5"));
                 opEntrega = Convert.ToInt32(entradaEntrega);
@@ -259,16 +241,17 @@ namespace MesaDePartes
 
                 // Guardar en el archivo para no perder el trámite al cerrar el programa
                 Persistencia.GuardarExpedientes();
+                Colores.Exito("Datos registrados correctamente.");
 
                 Console.WriteLine("");
-                Console.WriteLine("===== CARGO DE RECEPCIÓN =====");
-                Console.WriteLine("Número de registro: " + Expedientes.codigo[Expedientes.cantidad]);
-                Console.WriteLine("Fecha y hora: " + Expedientes.fechaHora[Expedientes.cantidad]);
-                Console.WriteLine("Solicitante: " + Expedientes.nombres[Expedientes.cantidad]);
-                Console.WriteLine("DNI: " + Expedientes.dni[Expedientes.cantidad]);
-                Console.WriteLine("Información solicitada: " + Expedientes.informacion[Expedientes.cantidad]);
-                Console.WriteLine("Estado: " + Expedientes.estado[Expedientes.cantidad]);
-                Console.WriteLine("Se enviaría una confirmación a " + Expedientes.correo[Expedientes.cantidad] + ".");
+                Colores.Exito("===== CARGO DE RECEPCIÓN =====");
+                Colores.Texto("Número de registro: " + Expedientes.codigo[Expedientes.cantidad]);
+                Colores.Texto("Fecha y hora: " + Expedientes.fechaHora[Expedientes.cantidad]);
+                Colores.Texto("Solicitante: " + Expedientes.nombres[Expedientes.cantidad]);
+                Colores.Texto("DNI: " + Expedientes.dni[Expedientes.cantidad]);
+                Colores.Texto("Información solicitada: " + Expedientes.informacion[Expedientes.cantidad]);
+                Colores.Texto("Estado: " + Expedientes.estado[Expedientes.cantidad]);
+                Colores.Texto("Se enviaría una confirmación a " + Expedientes.correo[Expedientes.cantidad] + ".");
             }
         }
 
@@ -281,18 +264,18 @@ namespace MesaDePartes
 
             do
             {
-                Console.WriteLine("Ingrese el código (EXP-AAAA-NNNNN):");
+                Colores.Texto("Ingrese el código (EXP-AAAA-NNNNN):");
                 codigoBuscado = Console.ReadLine();
                 valido = Validaciones.CodigoValido(codigoBuscado);
                 if (!valido)
                 {
-                    Console.WriteLine("Formato incorrecto. Ejemplo: EXP-2026-00001.");
+                    Colores.Error("Formato incorrecto. Ejemplo: EXP-2026-00001.");
                 }
             } while (!valido);
             posicion = Busqueda.BusquedaBinaria(codigoBuscado);
             if (posicion == 0)
             {
-                Console.WriteLine("Expediente no encontrado.");
+                Colores.Advertencia("Expediente no encontrado.");
             }
             else
             {
@@ -310,12 +293,12 @@ namespace MesaDePartes
 
             do
             {
-                Console.WriteLine("Ingrese su DNI (8 dígitos):");
+                Colores.Texto("Ingrese su DNI (8 dígitos):");
                 dniBuscado = Console.ReadLine();
-                valido = Validaciones.EsDigitosExactos(dniBuscado, 8);
+                valido = Validaciones.DniValido(dniBuscado);
                 if (!valido)
                 {
-                    Console.WriteLine("El DNI debe tener exactamente 8 dígitos.");
+                    Colores.Error("El DNI debe tener exactamente 8 dígitos y no puede ser 00000000.");
                 }
             } while (!valido);
             encontrados = 0;
@@ -325,13 +308,13 @@ namespace MesaDePartes
                 {
                     encontrados = encontrados + 1;
                     Console.WriteLine("");
-                    Console.WriteLine("Expediente " + encontrados);
+                    Colores.Titulo("Expediente " + encontrados);
                     Expedientes.MostrarExpediente(i);
                 }
             }
             if (encontrados == 0)
             {
-                Console.WriteLine("No se encontraron expedientes asociados a ese DNI.");
+                Colores.Advertencia("No se encontraron expedientes asociados a ese DNI.");
             }
         }
 
@@ -343,16 +326,16 @@ namespace MesaDePartes
 
             if (Expedientes.cantidad == 0)
             {
-                Console.WriteLine("No hay expedientes registrados.");
+                Colores.Advertencia("No hay expedientes registrados.");
             }
             else
             {
                 Ordenamiento.OrdenarPorNombres(orden);
                 Console.WriteLine("");
-                Console.WriteLine("EXPEDIENTES ORDENADOS POR APELLIDOS Y NOMBRES");
+                Colores.Titulo("EXPEDIENTES ORDENADOS POR APELLIDOS Y NOMBRES");
                 for (i = 1; i <= Expedientes.cantidad; i++)
                 {
-                    Console.WriteLine(Expedientes.nombres[orden[i]] + " | " + Expedientes.codigo[orden[i]]
+                    Colores.Texto(Expedientes.nombres[orden[i]] + " | " + Expedientes.codigo[orden[i]]
                         + " | " + Expedientes.fechaHora[orden[i]] + " | " + Expedientes.estado[orden[i]]);
                 }
             }
