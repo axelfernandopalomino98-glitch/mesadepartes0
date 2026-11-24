@@ -88,5 +88,23 @@ namespace MesaDePartes
             Colores.Texto("Fecha y hora: " + fechaHora[posicion]);
             Colores.Texto("Estado: " + estado[posicion]);
         }
+        public static string BuscarNombrePorDni(string dniBuscado)
+        {
+            int i;
+            string resultado = null;
+
+            for (i = 1; i <= cantidad && resultado == null; i++)
+            {
+                if (dni[i] == dniBuscado)
+                {
+                    resultado = nombres[i];
+                }
+            }
+            return resultado;
+        }
+        public static bool MismoNombre(string nombreA, string nombreB)
+        {
+            return string.Equals(nombreA.Trim(), nombreB.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
     }
 }

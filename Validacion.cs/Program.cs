@@ -105,6 +105,8 @@ namespace MesaDePartes
             string entradaEntrega, otraForma;
             int fechaNumero, horaNumero, anioActual, opEntrega;
             bool valido;
+            string nombreRegistrado;
+            bool nombreCoincide;
 
             if (Expedientes.cantidad >= Expedientes.MAXIMO)
             {
@@ -125,18 +127,27 @@ namespace MesaDePartes
                 Console.WriteLine("");
                 Colores.Advertencia("Coloca tu dirección real y tus datos correctos.");
                 Colores.Titulo("II. Datos del solicitante");
-                nuevoNombre = LeerTextoNoVacio("Apellidos y nombres: ");
-                do
-                {
-                    Colores.Texto("Documento de identidad (8 dígitos):");
-                    nuevoDni = Console.ReadLine();
-                    valido = Validaciones.DniValido(nuevoDni);
-                    if (!valido)
+                    nuevoNombre = LeerTextoNoVacio("Apellidos y nombres: ");
+                    do
                     {
-                        Colores.Error("El DNI debe tener exactamente 8 dígitos y no puede ser 00000000.");
+                        Colores.Texto("Documento de identidad (8 dígitos):");
+                        nuevoDni = Console.ReadLine();
+                        valido = Validaciones.DniValido(nuevoDni);
+                        if (!valido)
+                        {
+                            Colores.Error("El DNI debe tener exactamente 8 dígitos y no puede ser 00000000.");
+                        }
+                    } while (!valido);
+
+                    nombreRegistrado = Expedientes.BuscarNombrePorDni(nuevoDni);
+                    nombreCoincide = nombreRegistrado == null || Expedientes.MismoNombre(nombreRegistrado, nuevoNombre);
+                    if (!nombreCoincide)
+                    {
+                        Colores.Error("Este DNI ya fue registrado con otro nombre. Verifique sus datos.");
                     }
-                } while (!valido);
+
                 nuevaDireccion = LeerTextoNoVacio("Av./Calle/Jr./Psj.: ");
+                nuevoDepartamento = LeerTextoNoVacio("Departamento: ");
                 nuevoDepartamento = LeerTextoNoVacio("Departamento: ");
                 nuevaProvincia = LeerTextoNoVacio("Provincia: ");
                 nuevoDistrito = LeerTextoNoVacio("Distrito: ");
