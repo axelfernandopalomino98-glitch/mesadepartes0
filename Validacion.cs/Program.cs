@@ -127,6 +127,8 @@ namespace MesaDePartes
                 Console.WriteLine("");
                 Colores.Advertencia("Coloca tu dirección real y tus datos correctos.");
                 Colores.Titulo("II. Datos del solicitante");
+                do
+                {
                     nuevoNombre = LeerTextoNoVacio("Apellidos y nombres: ");
                     do
                     {
@@ -145,6 +147,7 @@ namespace MesaDePartes
                     {
                         Colores.Error("Este DNI ya fue registrado con otro nombre. Verifique sus datos.");
                     }
+                } while (!nombreCoincide);
 
                 nuevaDireccion = LeerTextoNoVacio("Av./Calle/Jr./Psj.: ");
                 nuevoDepartamento = LeerTextoNoVacio("Departamento: ");
